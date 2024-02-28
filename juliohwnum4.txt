@@ -1,0 +1,348 @@
+#ifndef TRIP_H
+#define TRIP_H
+
+#include <iostream>
+#include <cstring>  // For std::strlen and std::strcpy
+#include "data.h"
+
+constexpr auto tripDestinationLength = 420;
+
+class Trip {
+private:
+    int TripNum;
+    char* target;
+    Date date;
+    static int count;
+
+public:  // Only one public specifier is needed
+ 
+
+    Trip(char* destination, Date date) {
+        TripNum = countBigger();
+        setTarget(destination);
+        setDate(date);
+    }
+
+    Trip(Trip& trip) {
+        this->TripNum = trip.getTripNum();
+        setTarget(trip.getTarget());
+        setDate(trip.getDate());
+    }
+    
+
+        /*Trip(const Trip& trip) {
+            setTripNum(trip.getTripNum());
+            target = new char[std::strlen(trip.target) + 1];
+            strcpy_s(target, std::strlen(trip.target) + 1, trip.target);
+            setDate(trip.getDate());
+            setDate(trip.getDate());
+        }*/
+
+
+        Trip() : date(1, 2, 3) {
+        TripNum = countBigger();
+        target = new char[3];  // Allocating memory for "hi" and the null terminator
+        strcpy_s(target, 3, "hi");
+    }
+
+        static int countBigger() {
+            {
+                count++;
+                return count;
+            }
+    }
+
+
+
+
+    // Getter functions
+    int getTripNum() {
+        return this->TripNum;
+    }
+    char* getTarget() {
+        return this->target;
+    }
+    const Date getDate() {
+        return this->date;
+    }
+
+ 
+    void setTarget(const char* destination) {
+        
+        if (isLetters(destination)) {
+            target = new char[std::strlen(destination) + 1];
+            strcpy_s(target, std::strlen(destination) + 1, destination);
+            this->target[std::strlen(target)] = '\0';
+            
+        }
+        else {
+            target = new char[3];
+            strcpy_s(target, 3, "hi");
+        }
+        
+    }
+
+    bool isLetters(const char* temp) const {
+        for (size_t i = 0; i < std::strlen(temp); i++) {  // Use < instead of <=
+            if (!isalpha(temp[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+     void setDate(const Date& d) {
+        date = d;
+    }
+    void printTrip() const {
+        std::cout << "Trip Number: " << TripNum << std::endl;
+        std::cout << "Target: " << target << std::endl;
+        date.printDate();
+    }
+    void printCount() const {
+        std::cout << "plz " << count << std::endl;
+    }
+
+
+
+};
+#endif
+
+#ifndef DATE_H
+#define DATE_H
+
+#include <iostream>
+
+class Date {
+private:
+    int day;
+    int month;
+    int year;
+
+public:
+
+    // Default constructor
+    Date() : year(1), month(1), day(1) {}
+
+    // Parameterized constructor
+    Date(int d, int m, int y) {
+        setDay(d);
+        setMonth(m);
+        setYear(y);
+    }
+
+    // Copy constructor
+    Date(const Date& date) {
+        setDay(date.getDay());
+        setMonth(date.getMonth());
+        setYear(date.getYear());
+    }
+
+    bool operator<(const Date& other) const {
+        if (this->year != other.year) {
+            return this->year < other.year;
+        }
+        if (this->month != other.month) {
+            return this->month < other.month;
+        }
+        return this->day < other.day;
+    }
+
+    bool operator>(const Date& other) const {
+        if (this->year != other.year) {
+            return this->year > other.year;
+        }
+        if (this->month != other.month) {
+            return this->month > other.month;
+        }
+        return this->day > other.day;
+    }
+
+    bool operator==(const Date& other) const {
+        return this->year == other.year && this->month == other.month && this->day == other.day;
+    }
+
+    // Getter functions
+    int getDay() const { return day; }
+    int getMonth() const { return month; }
+    int getYear() const { return year; }
+
+    // Setter functions
+    void setYear(int year) {
+        this->year = (year > 0) ? year : 1;
+    }
+
+    void setMonth(int month) {
+        if (month > 12) {
+            this->month = 12;
+        }
+        else if (month < 1) {
+            this->month = 1;
+        }
+        else {
+            this->month = month;
+        }
+    }
+
+    // Note: This day setter is simplistic and doesn't account for different days in each month or leap years
+    void setDay(int day) {
+        if (day > 31) {
+            this->day = 31;
+        }
+        else if (day < 1) {
+            this->day = 1;
+        }
+        else {
+            this->day = day;
+        }
+    }
+
+    void printDate() const {
+        std::cout << "Date: " << day << "/" << month << "/" << year << std::endl;
+    }
+};
+
+#endif
+#include <iostream>
+
+#include "Trip.h"
+#include "data.h"
+
+using namespace std; // foregt to add std to data and trip f
+
+
+bool isEmpty(int size) {
+    return size == 0;
+}
+
+void Print(Trip* arr, int size) {
+    if (isEmpty(size)) {
+        cout << "No Trips" << endl;
+        return;
+    }
+    for (int i = 0; i < size; i++) {
+        printf("================\nTrip Number: %d.\n", i+1);
+        arr[i].getDate().printDate();
+        printf("\n");
+        cout << arr[i].getTripNum() << ", " << arr[i].getTarget() << endl;
+        printf("================\n");
+        arr[i].printCount();
+    }
+}
+
+void EditTrip(Trip* arr, int size) {
+    if (isEmpty(size)) {
+        cout << "No Trips" << endl;
+        return;
+    }
+
+    Date newDate;
+
+    int op;
+    while (true) {
+        cout << "Select the trip number to Edit" << endl;
+        cin >> op;
+
+        if (op -1  < 0 || op -1 > size) {
+            cout << op << " is out of range, try again" << endl;
+            continue;
+        }
+
+       
+        cout << "Edit new Destination" << endl;
+        char newDestination[tripDestinationLength];
+        cin.ignore(); //ingore weird input buffers
+        cin.getline(newDestination, tripDestinationLength);
+
+        int year, month, day;
+
+        cout << "edit new Year: " << endl;
+        cin >> year;
+
+        cout << "edit new Month: " << endl;
+        cin >> month;
+
+        cout << "edit new Day: " << endl;
+        cin >> day;
+
+        arr[op].setTarget(newDestination);
+
+        newDate.setYear(year);
+        newDate.setMonth(month);
+        newDate.setDay(day);
+        arr[op].setDate(newDate);
+
+        break;
+    }
+}
+
+Trip* AddTrip(Trip* arr, int size) {
+    Trip* newTrip = arr;
+
+    char newDestination[tripDestinationLength];
+
+    Date newDate;
+
+    cout << "Enter new Destination: " << endl;
+    cin.ignore(); //ingore weird input buffers
+    cin.getline(newDestination, tripDestinationLength);
+
+    int year, month, day;
+
+    cout << "Enter new Year: " << endl;
+    cin >> year;
+
+    cout << "Enter new Month: " << endl;
+    cin >> month;
+
+    cout << "Enter new Day: " << endl;
+    cin >> day;
+
+
+    newTrip[size].setTarget(newDestination);
+
+    newDate.setYear(year);
+
+    newDate.setMonth(month);
+
+    newDate.setDay(day);
+
+    newTrip[size].setDate(newDate);
+
+    return newTrip;
+}
+
+int main()
+{
+
+    int option;
+    Trip* arr = new Trip[0];
+    int size = 0;
+    do {
+        cout << "Please Select an option: \n1. Print Trip \n2. Edit Trip \n3. Add Trip \n4. Exit" << endl;
+        cin >> option;
+        switch (option) {
+        case 1:
+            Print(arr, size);
+            break;
+        case 2:
+            EditTrip(arr, size);
+            break;
+        case 3:
+            arr = AddTrip(arr, size);
+            size++;
+            break;
+        case 4:
+            cout << "bye bye!" << endl;
+            break;
+        default:
+            cout << "Invalid option!" << endl;
+            return 1;
+        }
+    } while (option != 4);
+
+    delete[] arr;
+
+    return 0;
+}
+int Trip::count = 0;

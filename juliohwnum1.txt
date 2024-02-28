@@ -1,0 +1,173 @@
+q1:
+#include <iostream>
+
+double WeightedAverage(double values[],double weights[], int size) {
+    double sum = 0.0;
+    double weightSum = 0.0;
+
+    for (int i = 0; i < size; i++) {
+        sum += weights[i] * values[i];
+        weightSum += weights[i];
+    }
+
+     return sum / weightSum;
+}
+
+int main() {
+    const int size = 4;
+    double values[size] = {5.0, 4.0, 3.0, 2.0};
+    double weights[size] = {0.5, 0.4, 0.3, 0.2};
+
+    double result = WeightedAverage(values, weights, size);
+
+  std::cout << "The Weighted Average: " << result << std::endl;
+
+    return 0;
+}
+
+
+
+q2:
+
+#include <iostream>
+using namespace std;
+
+
+bool IsArithmeticProgression(int a[],int size){
+  int d=a[1]-a[0];
+  for(int i=2;i<size;i++){
+    if(a[i]-a[i-1]!=d){
+      return false;
+    }
+    
+    }
+    }
+ char IsArithmeticProgression(char letter) {
+    return static_cast<int>(letter);
+      
+  }
+
+int main(){
+  
+  
+  //char *arr_char=NULL;
+  int arr_len=0,num;
+  char letter;
+  cout <<"arr len:";
+  cin>>arr_len;
+  if(arr_len<3){
+      arr_len=3;
+  }
+  int* arr=new int[arr_len];
+  cout <<"enter n if you want an arr of nums or anything else if you want an arr of chars";
+    cin>>letter;
+    if(letter=='n'){
+    for(int i=0;i<arr_len;i++){
+      cout<<"enter num"<<endl;
+     cin>>num;
+     arr[i]=num;
+      
+    }}else{
+     for(int i=0;i<arr_len;i++){
+      cout<<"enter letter"<<endl;
+     cin>>letter;
+     num=IsArithmeticProgression(letter);
+     arr[i]=num;
+      
+    }}
+  
+  
+  bool result=IsArithmeticProgression(arr,arr_len);
+  if(result){
+  std::cout << "true"<< std::endl;}
+  else{
+      std::cout << "false"<< std::endl;
+  }
+  
+  return 0;
+}
+
+q3
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+char** breakSentenceIntoWords(const char* sentence, int* size) {
+    int wordCount = 0;
+    for (int i = 0; sentence[i]; i++) {
+        if (sentence[i] == ' ') {
+            wordCount++;
+        }
+    }
+    wordCount++; 
+
+    char** words = (char**)malloc(wordCount * sizeof(char*));
+    if (words == NULL) {
+        perror("Memory allocation failed");
+        exit(1);
+    }
+
+
+    char* token = strtok((char*)sentence, " ");
+    int i = 0;
+    while (token != NULL) {
+        words[i] = (char*)malloc((strlen(token) + 1) * sizeof(char));
+        if (words[i] == NULL) {
+            perror("Memory allocation failed");
+            exit(1);
+        }
+        strcpy(words[i], token);
+        token = strtok(NULL, " ");
+        i++;
+    }
+
+    *size = wordCount;
+    return words;
+}
+
+
+char* duplicateString(const char* str) {
+    int len = strlen(str);
+    char* newStr = (char*)malloc((2 * len + 1) * sizeof(char));
+    if (newStr == NULL) {
+        perror("Memory allocation failed");
+        exit(1);
+    }
+    strcpy(newStr, str);
+    strcat(newStr, str);
+    return newStr;
+}
+
+
+void freeWords(char** words, int size) {
+    for (int i = 0; i < size; i++) {
+        free(words[i]);
+    }
+    free(words);
+}
+
+int main() {
+    char sentence[] = "This is a test sentence";
+    int size;
+
+
+    char** words = breakSentenceIntoWords(sentence, &size);
+
+
+    for (int i = 0; i < size; i++) {
+        printf("%s\n", words[i]);
+    }
+
+   
+    for (int i = 0; i < size; i++) {
+        char* duplicatedWord = duplicateString(words[i]);
+        printf("%s\n", duplicatedWord);
+        free(duplicatedWord);
+    }
+
+ 
+    freeWords(words, size);
+
+    return 0;
+}

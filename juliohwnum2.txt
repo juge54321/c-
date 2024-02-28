@@ -1,0 +1,121 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+class PairOfShoes {
+private:
+    std::string shoeName;
+    double shoePrice;
+
+public:
+    PairOfShoes(const std::string& name, double price)
+        : shoeName(name), shoePrice(price) {}
+
+    std::string getShoeName() const {
+        return shoeName;
+    }
+
+    double getShoePrice() const {
+        return shoePrice;
+    }
+};
+
+class ShoeStorage {
+private:
+    std::vector<PairOfShoes> shoes;
+
+public:
+    void AddPairOfShoes(const PairOfShoes& pair) {
+        shoes.push_back(pair);
+    }
+
+    double GetPrice(const std::string& name) const {
+        for (const PairOfShoes& pair : shoes) {
+            if (pair.getShoeName() == name) {
+                return pair.getShoePrice();
+            }
+        }
+        return 0.0; // Not found
+    }
+
+    double AverageShoePrice(double discountPercent) const {
+        if (shoes.empty()) {
+            return 0.0;
+        }
+
+        double totalPrice = 0.0;
+        for (const PairOfShoes& pair : shoes) {
+            double discountedPrice = pair.getShoePrice() * (1.0 - discountPercent / 100.0);
+            totalPrice += discountedPrice;
+        }
+
+        return totalPrice / shoes.size();
+    }
+
+    void RemoveOnePair(const std::string& name) {
+        for (auto it = shoes.begin(); it != shoes.end(); ++it) {
+            if (it->getShoeName() == name) {
+                shoes.erase(it);
+                break; // Found and removed
+            }
+        }
+    }
+};
+
+class ShoeStore {
+private:
+    ShoeStorage storage;
+    double discountPercent;
+
+public:
+    ShoeStore(double initialDiscount = 0.0) {
+        if (initialDiscount >= 0.0 && initialDiscount <= 100.0) {
+            discountPercent = initialDiscount;
+        } else {
+            discountPercent = 0.0; // Default to 0.0 if the provided discount is out of range
+        }
+    }
+
+    void SetDiscountPercent(double percent) {
+        if (percent >= 0.0 && percent <= 100.0) {
+            discountPercent = percent;
+        }
+    }
+
+    double GetDiscountPercent() const {
+        return discountPercent;
+    }
+
+    void AddShoes(const std::string& name, int amount = 1) {
+        for (int i = 0; i < amount; ++i) {
+            storage.AddPairOfShoes(PairOfShoes(name, storage.GetPrice(name)));
+        }
+    }
+
+    double AverageShoePrice() const {
+        return storage.AverageShoePrice(discountPercent);
+    }
+
+    double GetShoePrice(const std::string& name) const {
+        return storage.GetPrice(name) * (1.0 - discountPercent / 100.0);
+    }
+
+    void RemoveOnePair(const std::string& name) {
+        storage.RemoveOnePair(name);
+    }
+};
+
+int main() {
+    ShoeStore store(10.0); // Initialize with a 10% discount
+
+    store.AddShoes("Nike Air Max", 3);
+    store.AddShoes("Adidas Ultraboost", 2);
+
+    std::cout << "Average Shoe Price after 10% discount: $" << store.AverageShoePrice() << std::endl;
+    std::cout << "Price of Nike Air Max after 10% discount: $" << store.GetShoePrice("Nike Air Max") << std::endl;
+
+    store.RemoveOnePair("Nike Air Max");
+    std::cout << "Average Shoe Price after removing one pair: $" << store.AverageShoePrice() << std::endl;
+
+    return 0;
+}
